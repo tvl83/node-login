@@ -1,8 +1,8 @@
-/* ===================================================
- * bootstrap-transition.js v2.0.3
- * http://twitter.github.com/bootstrap/javascript.html#transitions
- * ===================================================
- * Copyright 2012 Twitter, Inc.
+/* ========================================================================
+ * Bootstrap: transition.js v3.0.3
+ * http://getbootstrap.com/javascript/#transitions
+ * ========================================================================
+ * Copyright 2013 Twitter, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,47 +15,42 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ========================================================== */
+ * ======================================================================== */
 
 
-!function ($) {
++function ($) { "use strict";
 
-  $(function () {
+	// CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+	// ============================================================
 
-    "use strict"; // jshint ;_;
+	function transitionEnd() {
+		var el = document.createElement('bootstrap.js')
 
+		var transEndEventNames = {
+			'WebkitTransition' : 'webkitTransitionEnd'
+			, 'MozTransition'    : 'transitionend'
+			, 'OTransition'      : 'oTransitionEnd otransitionend'
+			, 'transition'       : 'transitionend'
+		}
 
-    /* CSS TRANSITION SUPPORT (http://www.modernizr.com/)
-     * ======================================================= */
+		for (var name in transEndEventNames) {
+			if (el.style[name] !== undefined) {
+				return { end: transEndEventNames[name] }
+			}
+		}
+	}
 
-    $.support.transition = (function () {
+	// http://blog.alexmaccaw.com/css-transitions
+	$.fn.emulateTransitionEnd = function (duration) {
+		var called = false, $el = this
+		$(this).one($.support.transition.end, function () { called = true })
+		var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
+		setTimeout(callback, duration)
+		return this
+	}
 
-      var transitionEnd = (function () {
+	$(function () {
+		$.support.transition = transitionEnd()
+	})
 
-        var el = document.createElement('bootstrap')
-          , transEndEventNames = {
-               'WebkitTransition' : 'webkitTransitionEnd'
-            ,  'MozTransition'    : 'transitionend'
-            ,  'OTransition'      : 'oTransitionEnd'
-            ,  'msTransition'     : 'MSTransitionEnd'
-            ,  'transition'       : 'transitionend'
-            }
-          , name
-
-        for (name in transEndEventNames){
-          if (el.style[name] !== undefined) {
-            return transEndEventNames[name]
-          }
-        }
-
-      }())
-
-      return transitionEnd && {
-        end: transitionEnd
-      }
-
-    })()
-
-  })
-
-}(window.jQuery);
+}(jQuery);
